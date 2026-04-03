@@ -5,12 +5,6 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: [true, "A task should have a title!"],
     trim: true,
-    validate: {
-      validator: function (v) {
-        return v && v.trim().length > 0;
-      },
-      message: "Task title cannot be empty!",
-    },
   },
   description: {
     type: String,
