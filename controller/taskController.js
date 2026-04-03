@@ -36,11 +36,11 @@ exports.getAllTask = async (req, res, next) => {
 };
 
 exports.updateTask = async (req, res, next) => {
-  const doc = await Task.findByIdAndUpdate(req.params.id, req.body, {
+  const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
-  if (!doc) {
+  if (!task) {
     res.status(400).json({
       message: "No task found with that id",
       error: err.message,
@@ -49,7 +49,18 @@ exports.updateTask = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      data: doc,
+      data: task,
     },
+  });
+};
+
+exports.deleteTask = async (req, res) => {
+  const task = await Task.findByIdAndDelete(req.params.id);
+  if (!task) {
+    return next(new AppError("No task found with that ID", 404));
+  }
+  res.status(204).json({
+    status: "success",
+    data: null,
   });
 };
