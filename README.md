@@ -50,5 +50,3 @@ base url is `http://localhost:8000/api/v1/task`
 - PATCH `/:id` — edit a task
 - PATCH `/:id/complete` — mark as completed
 - DELETE `/:id` — delete a task
-
-thats it basically. lmk if something doesnt work :)
