@@ -2,12 +2,19 @@ const Task = require("../models/taskModel");
 
 exports.createTask = async (req, res, next) => {
   try {
-    const task = await Task.create(req.body);
-    res.status(200).json({
+    const { title, description } = req.body;
+
+    if (!title || title.trim().length === 0) {
+      return res.status(400).json({
+        message: "Validation Error",
+        error: "Task title cannot be empty!",
+      });
+    }
+
+    const task = await Task.create({ title, description });
+    res.status(201).json({
       message: "success",
-      data: {
-        task,
-      },
+      data: { task },
     });
   } catch (err) {
     res.status(400).json({
@@ -23,9 +30,7 @@ exports.getAllTask = async (req, res, next) => {
     res.status(200).json({
       message: "success",
       count: task.length,
-      data: {
-        task,
-      },
+      data: { task },
     });
   } catch (err) {
     res.status(400).json({
@@ -36,31 +41,55 @@ exports.getAllTask = async (req, res, next) => {
 };
 
 exports.updateTask = async (req, res, next) => {
-  const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!task) {
+  try {
+    if (req.body.title !== undefined && req.body.title.trim().length === 0) {
+      return res.status(400).json({
+        message: "Validation Error",
+        error: "Task title cannot be empty!",
+      });
+    }
+
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "No task found with that id",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: { task },
+    });
+  } catch (err) {
     res.status(400).json({
-      message: "No task found with that id",
+      message: "Failed to update task",
       error: err.message,
     });
   }
-  res.status(200).json({
-    status: "success",
-    data: {
-      data: task,
-    },
-  });
 };
 
-exports.deleteTask = async (req, res) => {
-  const task = await Task.findByIdAndDelete(req.params.id);
-  if (!task) {
-    return next(new AppError("No task found with that ID", 404));
+exports.deleteTask = async (req, res, next) => {
+  try {
+    const task = await Task.findByIdAndDelete(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "No task found with that ID",
+      });
+    }
+
+    res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: "Failed to delete task",
+      error: err.message,
+    });
   }
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
 };
