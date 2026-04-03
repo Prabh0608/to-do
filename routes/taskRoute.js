@@ -6,4 +6,7 @@ router
   .route("/")
   .post(taskController.createTask)
   .get(taskController.getAllTask);
+
+router.route("/:id").patch(taskController.updateTask);
+
 module.exports = router;
